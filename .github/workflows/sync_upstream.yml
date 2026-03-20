@@ -27,24 +27,32 @@ jobs:
       - name: Check for new upstream version
         id: check
         run: |
-          # Latest upstream tag
-          UPSTREAM_TAG=$(git tag --list --sort=-version:refname | grep -v '^v0\.' | head -1 || \
-                         git ls-remote --tags upstream | awk '{print $2}' | \
-                         grep -v '\^{}' | sed 's|refs/tags/||' | sort -V | tail -1)
+          # Latest upstream tag (exclude our own v0.x tags)
+          UPSTREAM_TAG=$(git ls-remote --tags upstream \
+            | awk '{print $2}' \
+            | grep -v '\^{}' \
+            | sed 's|refs/tags/||' \
+            | sort -V | tail -1)
 
-          # Current base tag recorded in our repo (stored in .upstream-version)
+          # Current base tag recorded in our repo
           CURRENT_BASE=$(cat .upstream-version 2>/dev/null || echo "none")
 
           echo "upstream_tag=$UPSTREAM_TAG" >> $GITHUB_OUTPUT
-          echo "current_base=$CURRENT_BASE" >> $GITHUB_OUTPUT
+          echo "current_base=$CURRENT_BASE"  >> $GITHUB_OUTPUT
 
           if [ "$UPSTREAM_TAG" != "$CURRENT_BASE" ]; then
-            echo "has_update=true" >> $GITHUB_OUTPUT
+            echo "has_update=true"  >> $GITHUB_OUTPUT
             echo "🆕 New upstream version: $UPSTREAM_TAG (current base: $CURRENT_BASE)"
           else
             echo "has_update=false" >> $GITHUB_OUTPUT
             echo "✅ Already up to date: $UPSTREAM_TAG"
           fi
+
+      - name: Install dependencies
+        if: steps.check.outputs.has_update == 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -q imagemagick
 
       - name: Setup Flutter
         if: steps.check.outputs.has_update == 'true'
@@ -63,17 +71,28 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
 
-          # Create branch from upstream tag
+          # ── Save EzClash-specific files before switching to upstream code ──
+          # After `git checkout -b BRANCH UPSTREAM_TAG`, the working tree
+          # becomes upstream content — our scripts/ and icon assets would be lost.
+          STASH="$(mktemp -d)"
+          cp -r scripts/ "$STASH/scripts"
+
+          # ── Create branch from upstream tag ────────────────────────────────
           git checkout -b "$BRANCH" "upstream/$UPSTREAM_TAG" 2>/dev/null || \
           git checkout -b "$BRANCH" refs/tags/"$UPSTREAM_TAG"
 
-          # Record which upstream version this is based on
+          # ── Record upstream base version ───────────────────────────────────
           echo "$UPSTREAM_TAG" > .upstream-version
 
-          # Apply EzClash patches
+          # ── Restore EzClash scripts (overwritten by upstream checkout) ─────
+          mkdir -p scripts/
+          cp -r "$STASH/scripts/." scripts/
+          chmod +x scripts/patch_ezclash.sh
+
+          # ── Apply all EzClash patches (icons, renaming, subscription code…) ─
           bash scripts/patch_ezclash.sh
 
-          # Regenerate freezed/json code
+          # ── Regenerate freezed / riverpod code ─────────────────────────────
           flutter pub get
           dart run build_runner build --delete-conflicting-outputs
 
@@ -98,13 +117,14 @@ jobs:
 
             ### 已自动完成
             - ✅ 拉取上游代码
-            - ✅ 应用 EzClash 全部补丁（订阅码、改名、移除 Firebase 等）
+            - ✅ 应用 EzClash 全部补丁（订阅码、改名、移除 Firebase、猫咪图标等）
             - ✅ 重新生成 freezed/riverpod 代码
 
             ### 合并前请确认
             - [ ] 检查是否有冲突需要手动解决
             - [ ] 在本地 `flutter run` 验证功能正常
             - [ ] 合并后推送新 tag（如 `v0.9.x`）触发正式发布
+            - [ ] 新 tag 版本号会自动写入 app（build.yaml 已配置）
 
             ---
             *由 sync_upstream.yml 自动创建*
