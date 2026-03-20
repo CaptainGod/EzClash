@@ -84,7 +84,13 @@ jobs:
           TAG="${{ github.ref_name }}"
           VERSION="${TAG#v}"
           BUILD=$(date +%Y%m%d%H)
-          sed -i "s/^version: .*/version: ${VERSION}+${BUILD}/" pubspec.yaml
+          python3 -c "
+import re, sys
+ver = '${VERSION}+${BUILD}'
+content = open('pubspec.yaml').read()
+content = re.sub(r'^version: .*', 'version: ' + ver, content, flags=re.MULTILINE)
+open('pubspec.yaml', 'w').write(content)
+"
           echo "pubspec version set to ${VERSION}+${BUILD}"
 
       - name: Get Flutter Dependency
