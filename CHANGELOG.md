@@ -1,3 +1,79 @@
+## v0.9.8
+
+- fix: use single-line python3 for version sync (YAML indent bug)
+
+- Multi-line python3 -c "..." inside YAML run: | block fails:
+
+- Python code lines with 0 indentation are seen by YAML parser as
+
+- ending the literal block → "workflow file issue" → 0s failure.
+
+- Fix: compress to one-line python3 -c command; no indentation issue.
+
+- Also fix same pattern in patch_ezclash.sh.
+
+- Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+## v0.9.7
+
+- fix: use python3 for pubspec version update (cross-platform sed -i fix)
+
+- sed -i without suffix fails on macOS BSD sed with "extra characters" error.
+
+- Replace with python3 one-liner which works identically on all platforms.
+
+- Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+- chore: update patch script and sync workflow
+
+- patch_ezclash.sh:
+
+- - Add cross-platform sed compatibility (_sedi function, macOS + Linux)
+
+- - Add section 8: Android adaptive icon fix (delete FlClash vector XML,
+
+-   generate all platform icons from scripts/icons/master.png via ImageMagick,
+
+-   update background color #7DBAEC, remove <monochrome> from adaptive XMLs)
+
+- - Add version auto-sync step to build.yaml (tag → pubspec version)
+
+- - Renumber sections to 10 total
+
+- sync_upstream.yml:
+
+- - Save scripts/ to temp stash before git checkout to upstream tag
+
+-   (fixes: patch script was overwritten by upstream code, breaking the workflow)
+
+- - Restore scripts/ after checkout, then run patch_ezclash.sh
+
+- - Install imagemagick before patching (needed for icon generation)
+
+- - Fix upstream tag detection to use ls-remote only (more reliable)
+
+- - Add scripts/icons/master.png as the EzClash icon source
+
+- Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+## v0.9.6
+
+- fix: auto-sync version from git tag; update icons with 1024px source
+
+- - build.yaml: add step to set pubspec version from git tag before build,
+
+-   so app version always matches release tag (was stuck at 0.9.4)
+
+- - pubspec.yaml: manually bump to 0.9.5 to match current release
+
+- - Icons: regenerate all platforms from new 1024x1024 source image;
+
+-   Android adaptive foreground now 288px centered on 432px canvas
+
+-   to prevent content cropping inside launcher safe zone
+
+- Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
 ## v0.9.5
 
 - feat: replace app icon with EzClash cat mascot image
