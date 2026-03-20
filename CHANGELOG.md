@@ -1,3 +1,23 @@
+## v0.9.5
+
+- feat: replace app icon with EzClash cat mascot image
+
+- - Replace all platform icons with the new EzClash cat+lightning mascot
+
+- - Android: replace foreground vector XML with bitmap WebP (432×432),
+
+-   update all mipmap densities (mdpi→xxxhdpi), fix adaptive icon XML
+
+-   (remove monochrome reference), update background color to #7DBAEC
+
+- - macOS: all AppIcon sizes (16→1024px)
+
+- - Windows: multi-size ICO (16/32/48/64/128/256px)
+
+- - Linux: assets/images/icon.png
+
+- Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
 ## v0.9.4
 
 - feat: new EzClash icon and bump version to 0.9.4
