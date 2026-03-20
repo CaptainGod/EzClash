@@ -1,3 +1,31 @@
+## v0.9.4
+
+- feat: new EzClash icon and bump version to 0.9.4
+
+- - Replace all platform icons (Android WebP, macOS PNG, Windows ICO)
+
+-   with new dark-navy/teal-E/lightning-bolt EzClash brand icon
+
+- - Add scripts/gen_icon.py for reproducible icon generation
+
+- - Bump pubspec version 0.9.0 → 0.9.4 to match latest release tag
+
+- Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+- feat: add patch script and auto-sync workflow
+
+- - scripts/patch_ezclash.sh: one-click script to apply all EzClash
+
+-   customizations on a fresh FlClash clone
+
+- - .github/workflows/sync_upstream.yml: weekly check for FlClash updates,
+
+-   auto-creates PR with patches applied when new version detected
+
+- - .upstream-version: tracks current upstream FlClash base (v0.8.92)
+
+- Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
 ## v0.9.3
 
 - fix: change Android applicationId and remove Firebase Crashlytics
