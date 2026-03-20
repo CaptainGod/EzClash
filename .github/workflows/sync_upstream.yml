@@ -1,0 +1,111 @@
+name: Sync upstream FlClash
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'   # 每周一凌晨 2 点检查
+  workflow_dispatch:        # 支持手动触发
+
+jobs:
+  sync:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout EzClash
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch upstream FlClash
+        run: |
+          git remote add upstream https://github.com/chen08209/FlClash.git || true
+          git fetch upstream --tags
+
+      - name: Check for new upstream version
+        id: check
+        run: |
+          # Latest upstream tag
+          UPSTREAM_TAG=$(git tag --list --sort=-version:refname | grep -v '^v0\.' | head -1 || \
+                         git ls-remote --tags upstream | awk '{print $2}' | \
+                         grep -v '\^{}' | sed 's|refs/tags/||' | sort -V | tail -1)
+
+          # Current base tag recorded in our repo (stored in .upstream-version)
+          CURRENT_BASE=$(cat .upstream-version 2>/dev/null || echo "none")
+
+          echo "upstream_tag=$UPSTREAM_TAG" >> $GITHUB_OUTPUT
+          echo "current_base=$CURRENT_BASE" >> $GITHUB_OUTPUT
+
+          if [ "$UPSTREAM_TAG" != "$CURRENT_BASE" ]; then
+            echo "has_update=true" >> $GITHUB_OUTPUT
+            echo "🆕 New upstream version: $UPSTREAM_TAG (current base: $CURRENT_BASE)"
+          else
+            echo "has_update=false" >> $GITHUB_OUTPUT
+            echo "✅ Already up to date: $UPSTREAM_TAG"
+          fi
+
+      - name: Setup Flutter
+        if: steps.check.outputs.has_update == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.41.5
+          cache: true
+
+      - name: Create sync branch and apply patches
+        if: steps.check.outputs.has_update == 'true'
+        run: |
+          UPSTREAM_TAG="${{ steps.check.outputs.upstream_tag }}"
+          BRANCH="sync/upstream-${UPSTREAM_TAG}"
+
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          # Create branch from upstream tag
+          git checkout -b "$BRANCH" "upstream/$UPSTREAM_TAG" 2>/dev/null || \
+          git checkout -b "$BRANCH" refs/tags/"$UPSTREAM_TAG"
+
+          # Record which upstream version this is based on
+          echo "$UPSTREAM_TAG" > .upstream-version
+
+          # Apply EzClash patches
+          bash scripts/patch_ezclash.sh
+
+          # Regenerate freezed/json code
+          flutter pub get
+          dart run build_runner build --delete-conflicting-outputs
+
+          git add -A
+          git commit -m "chore: apply EzClash patches on top of FlClash $UPSTREAM_TAG"
+
+      - name: Create Pull Request
+        if: steps.check.outputs.has_update == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: sync/upstream-${{ steps.check.outputs.upstream_tag }}
+          base: main
+          title: "⬆️ Sync: FlClash ${{ steps.check.outputs.upstream_tag }}"
+          body: |
+            ## 上游 FlClash 有新版本
+
+            | 项目 | 版本 |
+            |------|------|
+            | 上游新版本 | `${{ steps.check.outputs.upstream_tag }}` |
+            | 当前基础版本 | `${{ steps.check.outputs.current_base }}` |
+
+            ### 已自动完成
+            - ✅ 拉取上游代码
+            - ✅ 应用 EzClash 全部补丁（订阅码、改名、移除 Firebase 等）
+            - ✅ 重新生成 freezed/riverpod 代码
+
+            ### 合并前请确认
+            - [ ] 检查是否有冲突需要手动解决
+            - [ ] 在本地 `flutter run` 验证功能正常
+            - [ ] 合并后推送新 tag（如 `v0.9.x`）触发正式发布
+
+            ---
+            *由 sync_upstream.yml 自动创建*
+          labels: upstream-sync
