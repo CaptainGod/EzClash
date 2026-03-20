@@ -1,7 +1,7 @@
 name: fl_clash
 description: EzClash - A multi-platform proxy client based on FlClash/ClashMeta, with subscription code support.
 publish_to: 'none'
-version: 0.9.4+2026032001
+version: 0.9.5+2026032001
 environment:
   sdk: '>=3.8.0 <4.0.0'
 
