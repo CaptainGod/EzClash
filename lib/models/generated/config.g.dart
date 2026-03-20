@@ -35,6 +35,9 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
           ) ??
           RestoreStrategy.compatible,
       showTrayTitle: json['showTrayTitle'] as bool? ?? true,
+      subscriptionPrefix:
+          json['subscriptionPrefix'] as String? ??
+          'https://1814840116.v.123pan.cn/1814840116/',
     );
 
 Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
@@ -61,6 +64,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'developerMode': instance.developerMode,
       'restoreStrategy': _$RestoreStrategyEnumMap[instance.restoreStrategy]!,
       'showTrayTitle': instance.showTrayTitle,
+      'subscriptionPrefix': instance.subscriptionPrefix,
     };
 
 const _$RestoreStrategyEnumMap = {

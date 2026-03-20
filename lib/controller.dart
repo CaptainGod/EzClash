@@ -377,6 +377,22 @@ extension ProfilesControllerExt on AppController {
     addProfileFormURL(url);
   }
 
+  String get subscriptionPrefix {
+    return _ref.read(appSettingProvider).subscriptionPrefix;
+  }
+
+  void updateSubscriptionPrefix(String prefix) {
+    _ref
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(subscriptionPrefix: prefix));
+  }
+
+  Future<void> addProfileFromSubscriptionCode(String code) async {
+    final prefix = subscriptionPrefix;
+    final url = '$prefix$code';
+    addProfileFormURL(url);
+  }
+
   void reorder(List<Profile> profiles) {
     _ref.read(profilesProvider.notifier).reorder(profiles);
   }

@@ -356,6 +356,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "fidelityScheme": MessageLookupByLibrary.simpleMessage("Fidelity"),
     "file": MessageLookupByLibrary.simpleMessage("File"),
     "fileDesc": MessageLookupByLibrary.simpleMessage("Directly upload profile"),
+    "subscriptionCode": MessageLookupByLibrary.simpleMessage("Subscription Code"),
+    "subscriptionCodeDesc": MessageLookupByLibrary.simpleMessage("Import profile using a short subscription code"),
+    "importFromSubscriptionCode": MessageLookupByLibrary.simpleMessage("Import from Subscription Code"),
+    "subscriptionCodeHint": MessageLookupByLibrary.simpleMessage("Enter 8-digit subscription code"),
+    "subscriptionPrefix": MessageLookupByLibrary.simpleMessage("Subscription URL Prefix"),
+    "subscriptionCodeTip": MessageLookupByLibrary.simpleMessage("Please enter a valid 8-digit numeric code"),
     "fileIsUpdate": MessageLookupByLibrary.simpleMessage(
       "The file has been modified. Do you want to save the changes?",
     ),

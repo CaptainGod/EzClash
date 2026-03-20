@@ -84,6 +84,8 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(false) bool developerMode,
     @Default(RestoreStrategy.compatible) RestoreStrategy restoreStrategy,
     @Default(true) bool showTrayTitle,
+    @Default('https://1814840116.v.123pan.cn/1814840116/')
+    String subscriptionPrefix,
   }) = _AppSettingProps;
 
   factory AppSettingProps.fromJson(Map<String, Object?> json) =>

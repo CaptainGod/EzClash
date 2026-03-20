@@ -4,9 +4,18 @@
 
 </div>
 
-## FlClash
+## EzClash
 
-[![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases/)[![Last Version](https://img.shields.io/github/release/chen08209/FlClash/all.svg?style=flat-square)](https://github.com/chen08209/FlClash/releases/)[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
+> Based on [FlClash](https://github.com/chen08209/FlClash) · GPL-3.0 License
+
+[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
+
+### EzClash 新增功能
+
+- **订阅码导入**：在「添加配置」界面新增「订阅码」方式，只需输入 8 位数字订阅码即可自动拼接完整 URL 并下载配置，无需复制长链接。
+- **自定义订阅前缀**：订阅码前缀可在对话框中自定义修改，默认前缀持久化保存。
+
+---
 
 [![Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=flat-square&logo=telegram)](https://t.me/FlClash)
 

@@ -574,6 +574,66 @@ class AppLocalizations {
     );
   }
 
+  /// `Subscription Code`
+  String get subscriptionCode {
+    return Intl.message(
+      'Subscription Code',
+      name: 'subscriptionCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import profile using a short subscription code`
+  String get subscriptionCodeDesc {
+    return Intl.message(
+      'Import profile using a short subscription code',
+      name: 'subscriptionCodeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import from Subscription Code`
+  String get importFromSubscriptionCode {
+    return Intl.message(
+      'Import from Subscription Code',
+      name: 'importFromSubscriptionCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter 8-digit subscription code`
+  String get subscriptionCodeHint {
+    return Intl.message(
+      'Enter 8-digit subscription code',
+      name: 'subscriptionCodeHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription URL Prefix`
+  String get subscriptionPrefix {
+    return Intl.message(
+      'Subscription URL Prefix',
+      name: 'subscriptionPrefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid 8-digit numeric code`
+  String get subscriptionCodeTip {
+    return Intl.message(
+      'Please enter a valid 8-digit numeric code',
+      name: 'subscriptionCodeTip',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Name`
   String get name {
     return Intl.message('Name', name: 'name', desc: '', args: []);
