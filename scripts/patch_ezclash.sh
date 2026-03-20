@@ -158,22 +158,25 @@ if ! grep -q 'contents: write' .github/workflows/build.yaml; then
 fi
 
 # Add version auto-sync step (sets pubspec version from git tag before build)
+# Uses a single-line python3 command to avoid YAML indentation issues
+# (multi-line python3 -c in run: | breaks YAML if code has less indentation than block level)
 if ! grep -q 'Sync version from git tag' .github/workflows/build.yaml; then
   python3 - .github/workflows/build.yaml <<'PYEOF'
 import sys
 path = sys.argv[1]
 content = open(path).read()
-step = """\
-      - name: Sync version from git tag
-        shell: bash
-        run: |
-          TAG="${{ github.ref_name }}"
-          VERSION="${TAG#v}"
-          BUILD=$(date +%Y%m%d%H)
-          sed -i "s/^version: .*/version: ${VERSION}+${BUILD}/" pubspec.yaml
-          echo "pubspec version set to ${VERSION}+${BUILD}"
-
-"""
+step = (
+    "      - name: Sync version from git tag\n"
+    "        shell: bash\n"
+    "        run: |\n"
+    "          TAG=\"${{ github.ref_name }}\"\n"
+    "          VERSION=\"${TAG#v}\"\n"
+    "          BUILD=$(date +%Y%m%d%H)\n"
+    "          FULL_VERSION=\"${VERSION}+${BUILD}\"\n"
+    "          python3 -c \"import re; f='pubspec.yaml'; t=open(f).read(); open(f,'w').write(re.sub(r'^version:.*$','version: $FULL_VERSION',t,flags=re.MULTILINE))\"\n"
+    "          echo \"pubspec version set to $FULL_VERSION\"\n"
+    "\n"
+)
 marker = "      - name: Get Flutter Dependency"
 if marker in content:
     content = content.replace(marker, step + marker, 1)

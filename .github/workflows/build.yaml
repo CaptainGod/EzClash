@@ -84,14 +84,9 @@ jobs:
           TAG="${{ github.ref_name }}"
           VERSION="${TAG#v}"
           BUILD=$(date +%Y%m%d%H)
-          python3 -c "
-import re, sys
-ver = '${VERSION}+${BUILD}'
-content = open('pubspec.yaml').read()
-content = re.sub(r'^version: .*', 'version: ' + ver, content, flags=re.MULTILINE)
-open('pubspec.yaml', 'w').write(content)
-"
-          echo "pubspec version set to ${VERSION}+${BUILD}"
+          FULL_VERSION="${VERSION}+${BUILD}"
+          python3 -c "import re; f='pubspec.yaml'; t=open(f).read(); open(f,'w').write(re.sub(r'^version:.*$','version: $FULL_VERSION',t,flags=re.MULTILINE))"
+          echo "pubspec version set to $FULL_VERSION"
 
       - name: Get Flutter Dependency
         run: |
