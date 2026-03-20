@@ -93,7 +93,7 @@ class Build {
     BuildItem(target: Target.android, arch: Arch.amd64, archName: 'x86_64'),
   ];
 
-  static String get appName => 'FlClash';
+  static String get appName => 'EzClash';
 
   static String get coreName => 'FlClashCore';
 
